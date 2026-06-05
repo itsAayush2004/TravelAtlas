@@ -1,0 +1,9 @@
+name: Greenland Chocolate Factory
+region: Nuuk, Greenland
+date: 
+lat: 64.1814
+lng: -51.6941
+photos: 4
+
+story:
+The whimsical one — handmade chocolate at the edge of the ice, icebergs drifting past the harbour window.

@@ -1,0 +1,9 @@
+name: Singapore
+region: Singapore
+date: Jun 2019
+lat: 1.3521
+lng: 103.8198
+photos: 4
+
+story:
+First trip abroad. Supertrees lighting up, hawker-centre dinners, and a skyline that felt like the future.

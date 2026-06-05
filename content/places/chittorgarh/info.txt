@@ -1,0 +1,9 @@
+name: Chittorgarh
+region: Rajasthan, India
+date: Oct 2020
+lat: 24.8887
+lng: 74.6269
+photos: 4
+
+story:
+India's largest fort — towers of victory, echoing palaces, and centuries of Rajput legend in the stone.

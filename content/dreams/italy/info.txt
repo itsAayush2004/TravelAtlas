@@ -1,0 +1,9 @@
+name: Italy
+region: Rome, Italy
+date: 
+lat: 41.9028
+lng: 12.4964
+photos: 4
+
+story:
+Someday — Rome's ruins, Tuscan hills, Venetian canals, and pasta in a tiny trattoria with no English menu.

@@ -1,0 +1,9 @@
+name: Gangtok
+region: Sikkim, India
+date: Apr 2022
+lat: 27.3314
+lng: 88.6138
+photos: 4
+
+story:
+Mountain capital of prayer flags and momos, switchbacking up toward the high Himalaya and the Nathu La road.

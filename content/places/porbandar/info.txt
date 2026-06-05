@@ -1,0 +1,9 @@
+name: Porbandar
+region: Gujarat, India
+date: Dec 2022
+lat: 21.6417
+lng: 69.6293
+photos: 4
+
+story:
+Gandhi's birthplace on the Arabian Sea — quiet coastline, fishing harbour, and Kirti Mandir.

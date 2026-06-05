@@ -1,0 +1,9 @@
+name: Guwahati
+region: Assam · NE India
+date: Apr 2022
+lat: 26.1445
+lng: 91.7362
+photos: 4
+
+story:
+The gateway to the Northeast — the wide brown Brahmaputra at dusk and the hilltop Kamakhya temple.

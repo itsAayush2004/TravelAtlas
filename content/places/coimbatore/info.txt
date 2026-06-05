@@ -1,0 +1,9 @@
+name: Coimbatore
+region: Tamil Nadu, India
+date: Jun 2026
+lat: 11.0168
+lng: 76.9558
+photos: 4
+
+story:
+Gateway to the Nilgiris — textile-mill city at the foot of the hills, filter coffee, and warm Tamil hospitality.

@@ -1,0 +1,10 @@
+name: Aayush
+role: Traveler & Cartographer
+location: Jaipur, India
+link: https://github.com/akversebusiness-beep
+linkLabel: GitHub ↗
+
+bio:
+Hi, I'm Aayush. I built this living atlas to chart every place I've explored — and the
+many lands I still dream of charting. Each pin is a memory; each blue marker is a someday.
+Drop me a line on GitHub if you make your own.

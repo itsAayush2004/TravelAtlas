@@ -1,0 +1,9 @@
+name: Masai Mara
+region: Kenya
+date: 
+lat: -1.5
+lng: 35.14
+photos: 4
+
+story:
+The dream safari — the great wildebeest migration thundering across the Mara, balloons over the plains at sunrise.

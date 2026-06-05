@@ -1,0 +1,9 @@
+name: Gir
+region: Gujarat, India
+date: Dec 2022
+lat: 21.1244
+lng: 70.8245
+photos: 4
+
+story:
+The last home of the Asiatic lion. A dawn safari through teak forest, and the moment a pride crossed ahead.

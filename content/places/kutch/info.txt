@@ -1,0 +1,9 @@
+name: Kutch
+region: Gujarat, India
+date: Dec 2022
+lat: 23.2419
+lng: 69.6669
+photos: 4
+
+story:
+The white desert of the Rann under a full moon — endless salt flats, folk music, and bitter cold nights.

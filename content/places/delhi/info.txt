@@ -1,0 +1,9 @@
+name: Delhi
+region: Delhi NCR, India
+date: Often
+lat: 28.6139
+lng: 77.209
+photos: 4
+
+story:
+The capital I keep returning to — Mughal monuments, Old Delhi lanes, and friends across the city.

@@ -1,0 +1,9 @@
+name: Bikaner
+region: Rajasthan, India
+date: Feb 2021
+lat: 28.0229
+lng: 73.3119
+photos: 4
+
+story:
+Desert fort city — Junagarh's painted halls, camels at the research farm, and fierce kachori in the bazaar.

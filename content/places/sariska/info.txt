@@ -1,0 +1,9 @@
+name: Sariska
+region: Rajasthan, India
+date: Nov 2023
+lat: 27.33
+lng: 76.4167
+photos: 4
+
+story:
+A quieter reserve in the Aravallis — peacocks, old temples, and a langur troop that owned the trail.

@@ -1,0 +1,9 @@
+name: Udaipur
+region: Rajasthan, India
+date: Feb 2021
+lat: 24.5854
+lng: 73.7125
+photos: 4
+
+story:
+City of lakes — palaces floating on the water, narrow stepped lanes, and a sunset boat on Lake Pichola.

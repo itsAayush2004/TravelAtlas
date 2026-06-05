@@ -1,0 +1,9 @@
+name: Pushkar
+region: Rajasthan, India
+date: Oct 2020
+lat: 26.4899
+lng: 74.5511
+photos: 4
+
+story:
+Holy lake town — ghats at dusk, the camel fair dust, and the only Brahma temple in the world.

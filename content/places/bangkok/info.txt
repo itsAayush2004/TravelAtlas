@@ -1,0 +1,9 @@
+name: Bangkok
+region: Thailand
+date: Dec 2018
+lat: 13.7563
+lng: 100.5018
+photos: 4
+
+story:
+Temples and tuk-tuks by day, street food and night markets by night. Loud, golden, and unforgettable.

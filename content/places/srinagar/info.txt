@@ -1,0 +1,9 @@
+name: Srinagar
+region: Kashmir, India
+date: May 2023
+lat: 34.0837
+lng: 74.7973
+photos: 4
+
+story:
+Dal Lake at dawn from a shikara, Mughal gardens in bloom, and snow still clinging to the surrounding peaks.

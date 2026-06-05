@@ -1,0 +1,9 @@
+name: Leh
+region: Ladakh, India
+date: Aug 2023
+lat: 34.1526
+lng: 77.5771
+photos: 4
+
+story:
+High-altitude moonscape at 3,500m — gompas on the ridgelines, Pangong's impossible blue, and thin cold aasfdcweasfeqwfdqafec wef eir.

@@ -1,0 +1,9 @@
+name: Northern Lights
+region: Tromsø · Arctic
+date: 
+lat: 69.6492
+lng: 18.9553
+photos: 4
+
+story:
+Chasing the aurora above the Arctic Circle — green curtains over the snow, dog sleds, and a glass igloo night.

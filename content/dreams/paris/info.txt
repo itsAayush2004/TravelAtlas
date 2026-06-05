@@ -1,0 +1,9 @@
+name: Paris
+region: France
+date: 
+lat: 48.8566
+lng: 2.3522
+photos: 4
+
+story:
+The classic — the Tower sparkling on the hour, Seine walks, the Louvre, and a croissant at a corner café.

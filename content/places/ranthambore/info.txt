@@ -1,0 +1,9 @@
+name: Ranthambore
+region: Rajasthan, India
+date: Nov 2023
+lat: 26.0173
+lng: 76.5026
+photos: 4
+
+story:
+Tiger country. Hours of patient jeep tracking through dry forest and ruined gates before the stripes finally stepped onto the road.

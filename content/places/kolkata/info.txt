@@ -1,0 +1,9 @@
+name: Kolkata
+region: West Bengal, India
+date: Jan 2024
+lat: 22.5726
+lng: 88.3639
+photos: 4
+
+story:
+City of joy — yellow Ambassadors, the Howrah Bridge, rolls and roshogolla, and old colonial bones everywhere.

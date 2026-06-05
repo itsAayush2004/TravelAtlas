@@ -1,0 +1,10 @@
+name: Jaipur
+region: Rajasthan, India
+date: Home
+home: true
+lat: 26.9124
+lng: 75.7873
+photos: 4
+
+story:
+Home base — the Pink City. Amber Fort at dawn, the chaos of Johari Bazaar, and the rooftop view that starts and ends every trip.

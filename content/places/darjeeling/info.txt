@@ -1,0 +1,9 @@
+name: Darjeeling
+region: West Bengal, India
+date: Apr 2022
+lat: 27.041
+lng: 88.2663
+photos: 4
+
+story:
+Toy train, first-flush tea gardens, and a 4am climb to Tiger Hill to watch Kanchenjunga catch fire in the sunrise.

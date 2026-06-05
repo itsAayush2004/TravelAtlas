@@ -1,0 +1,9 @@
+name: Ooty
+region: Tamil Nadu, India
+date: Jun 2026
+lat: 11.4102
+lng: 76.695
+photos: 4
+
+story:
+Queen of the hill stations — eucalyptus air, the rack railway through tea slopes, and rowboats on the lake.

@@ -1,0 +1,9 @@
+name: Mount Abu
+region: Rajasthan, India
+date: Dec 2021
+lat: 24.5926
+lng: 72.7156
+photos: 4
+
+story:
+Rajasthan's only hill station — cool air, the marble lacework of the Dilwara temples, and sunset point crowds.

@@ -1,0 +1,9 @@
+name: Gurugram
+region: Haryana, India
+date: Often
+lat: 28.4595
+lng: 77.0266
+photos: 4
+
+story:
+Glass-tower work trips — late nights, big coffees, and the occasional rooftop with a skyline view.
