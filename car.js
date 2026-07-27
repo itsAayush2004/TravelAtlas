@@ -224,8 +224,8 @@
       }));
       sign.scale.set(scale * 2.3, scale * 0.79, 1);
       sign.userData.url = LINKS[s].url;
-      host.add(sign);
-      panels.push(sign);
+      scene.add(sign);          // placed in world space so they sit neatly
+      panels.push(sign);        // above the car whichever way the globe is turned
     }
 
     var grit = GRIT ? BLOBS.map(blockTexture) : null;
@@ -244,7 +244,7 @@
     var u = new THREE.Vector3(Math.cos(TILT), Math.sin(TILT), 0).normalize();
     var v = new THREE.Vector3(0, 0, 1);
 
-    car = { g: g, R: R, r: R * LIFT, u: u, v: v, a: 0,
+    car = { g: g, host: host, R: R, r: R * LIFT, u: u, v: v, a: 0,
             dust: dust, next: 0, n: 0, side: 1, scale: scale };
 
     wireClicks();
@@ -296,7 +296,9 @@
   /* ---------- per frame ---------- */
   var P = new THREE.Vector3(), V = new THREE.Vector3(),
       UP = new THREE.Vector3(), RGT = new THREE.Vector3(),
-      TMP = new THREE.Vector3(), M = new THREE.Matrix4();
+      TMP = new THREE.Vector3(), M = new THREE.Matrix4(),
+      CAMR = new THREE.Vector3(), CAMU = new THREE.Vector3(),
+      CARW = new THREE.Vector3();
 
   var STEP_SCALE   = [0.30, 0.46, 0.66, 0.88];   // stepped, not smooth — keeps it 8-bit
   var STEP_OPACITY = [0.80, 0.62, 0.40, 0.17];
@@ -320,13 +322,20 @@
     M.makeBasis(RGT, UP, V);
     c.g.quaternion.setFromRotationMatrix(M);
 
-    /* signs float over the roof, one either side, with a slow bob */
-    var lift = c.scale * (1.9 + Math.sin(now * 1.6) * 0.08);
-    for (var s = 0; s < panels.length; s++) {
-      var off = (s === 0 ? -1 : 1) * c.scale * 1.28;
-      panels[s].position.copy(P)
-        .addScaledVector(UP, lift)
-        .addScaledVector(RGT, off);
+    /* signs float over the roof, one either side, with a slow bob.
+       They are offset along the camera's own axes rather than the globe's,
+       so they always read as sitting just above the car on screen */
+    if (camera) {
+      var lift = c.scale * (1.5 + Math.sin(now * 1.6) * 0.06);
+      var e = camera.matrixWorld.elements;
+      CAMR.set(e[0], e[1], e[2]).normalize();
+      CAMU.set(e[4], e[5], e[6]).normalize();
+      CARW.copy(P).applyMatrix4(c.host.matrixWorld);
+      for (var s = 0; s < panels.length; s++) {
+        panels[s].position.copy(CARW)
+          .addScaledVector(CAMU, lift)
+          .addScaledVector(CAMR, (s === 0 ? -1 : 1) * c.scale * 1.22);
+      }
     }
 
     if (!c.dust.length) return;
