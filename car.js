@@ -30,8 +30,7 @@
   var DUST   = 0x9c8a6a;             // dust colour
 
   var LINKS = [
-    { url: 'https://arthis.space', label: 'arthis.space' },
-    { url: 'https://arthis.land',  label: 'arthis.land'  }
+    { url: 'https://github.com/itsAayush2004', label: 'github.com/itsAayush2004' }
   ];
 
   var scene = null, camera = null, started = false, wired = false;
@@ -170,8 +169,8 @@
     g.font = '600 44px ' + FONT;
     g.fillText('CLICK ME', W / 2 + 6, 56);
     g.fillStyle = '#e8392b';
-    g.font = '600 32px ' + FONT;
-    g.fillText(label, W / 2 + 6, 102);
+    g.font = '600 26px ' + FONT;
+    g.fillText(label, W / 2 + 6, 100);
 
     var t = new THREE.CanvasTexture(c);
     t.anisotropy = MOBILE ? 2 : 8;
@@ -332,9 +331,10 @@
       CAMU.set(e[4], e[5], e[6]).normalize();
       CARW.copy(P).applyMatrix4(c.host.matrixWorld);
       for (var s = 0; s < panels.length; s++) {
+        var off = panels.length === 1 ? 0 : (s === 0 ? -1 : 1) * c.scale * 1.22;
         panels[s].position.copy(CARW)
           .addScaledVector(CAMU, lift)
-          .addScaledVector(CAMR, (s === 0 ? -1 : 1) * c.scale * 1.22);
+          .addScaledVector(CAMR, off);
       }
     }
 
