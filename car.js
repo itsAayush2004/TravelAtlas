@@ -20,7 +20,7 @@
   var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var MOBILE  = innerWidth < 720;
 
-  var SIZE   = 0.13;                 // car height, as a fraction of globe radius
+  var SIZE   = 0.20;                 // car height, as a fraction of globe radius
   var LIFT   = 1.013;                // orbit radius, as a fraction of globe radius
   var TILT   = 0.42;                 // orbit inclination, radians
   var SPEED  = REDUCED ? 0 : 0.20;   // rad/s — one lap ≈ 31s
@@ -297,7 +297,7 @@
       UP = new THREE.Vector3(), RGT = new THREE.Vector3(),
       TMP = new THREE.Vector3(), M = new THREE.Matrix4(),
       CAMR = new THREE.Vector3(), CAMU = new THREE.Vector3(),
-      CARW = new THREE.Vector3();
+      CARW = new THREE.Vector3(), UPW = new THREE.Vector3();
 
   var STEP_SCALE   = [0.30, 0.46, 0.66, 0.88];   // stepped, not smooth — keeps it 8-bit
   var STEP_OPACITY = [0.80, 0.62, 0.40, 0.17];
@@ -321,19 +321,23 @@
     M.makeBasis(RGT, UP, V);
     c.g.quaternion.setFromRotationMatrix(M);
 
-    /* signs float over the roof, one either side, with a slow bob.
-       They are offset along the camera's own axes rather than the globe's,
-       so they always read as sitting just above the car on screen */
+    /* the sign is pushed straight out of the globe along the car's own
+       radial — so it is always on the far side of the car from the world's
+       centre and can never sink into the sphere — with a small nudge along
+       the camera's up so it still clears the roof when the car is facing
+       you head-on. Being a sprite, it squares up to the viewer either way. */
     if (camera) {
-      var lift = c.scale * (1.5 + Math.sin(now * 1.6) * 0.06);
+      var lift = c.scale * (2.1 + Math.sin(now * 1.6) * 0.07);
       var e = camera.matrixWorld.elements;
       CAMR.set(e[0], e[1], e[2]).normalize();
       CAMU.set(e[4], e[5], e[6]).normalize();
       CARW.copy(P).applyMatrix4(c.host.matrixWorld);
+      UPW.copy(UP).transformDirection(c.host.matrixWorld);
       for (var s = 0; s < panels.length; s++) {
         var off = panels.length === 1 ? 0 : (s === 0 ? -1 : 1) * c.scale * 1.22;
         panels[s].position.copy(CARW)
-          .addScaledVector(CAMU, lift)
+          .addScaledVector(UPW, lift)
+          .addScaledVector(CAMU, c.scale * 0.55)
           .addScaledVector(CAMR, off);
       }
     }
