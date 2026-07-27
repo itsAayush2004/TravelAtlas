@@ -411,6 +411,21 @@
 </style>
 </head>
 <body>
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-globe" aria-hidden="true">
+        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.1">
+          <circle cx="50" cy="50" r="42"/>
+          <ellipse cx="50" cy="50" rx="42" ry="17"/>
+          <ellipse cx="50" cy="50" rx="17" ry="42"/>
+          <path d="M8 50h84M50 8v84" stroke-width=".7" opacity=".5"/>
+        </svg>
+        <span class="loader-orbit"><i class="loader-dot"></i></span>
+      </div>
+      <div class="loader-label">Charting the atlas<span class="loader-dots"><i></i><i></i><i></i></span></div>
+      <div class="loader-bar"><span></span></div>
+    </div>
+  </div>
   <canvas id="scene"></canvas>
 
   <div class="compass" aria-hidden="true">
@@ -1227,8 +1242,30 @@ applyLayout(); camera.position.z=baseZ;
   document.getElementById('enterBtn').addEventListener('click',e=>{e.stopPropagation();enter();});
   const hint=document.getElementById('sHint');
   (function wait(){ if(texReady){ hint.textContent='Tap to enter'; } else setTimeout(wait,200); })();
-  // auto-enter once ready, after a minimum dwell (6 seconds)
-  setTimeout(function chk(){ if(texReady) enter(); else setTimeout(chk,200); }, 6000);
+  // auto-enter once the loading screen is gone, after a minimum dwell on the welcome card
+  (function chk(){ if(texReady && !document.getElementById('loader')) setTimeout(enter,3500); else setTimeout(chk,200); })();
+})();
+
+/* ---- boot gate: hold the loading screen until fonts + globe texture are ready, so nothing half-built is ever shown ---- */
+(function(){
+  const el=document.getElementById('loader'); if(!el) return;
+  const bar=el.querySelector('.loader-bar span');
+  let pct=0, done=false;
+  const tick=setInterval(function(){ pct=Math.min(pct+Math.random()*7,92); if(bar) bar.style.width=pct+'%'; },160);
+  function finish(){
+    if(done) return; done=true; clearInterval(tick);
+    if(bar) bar.style.width='100%';
+    setTimeout(function(){ el.classList.add('done'); },260);
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },1100);
+  }
+  const fonts=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+  Promise.race([fonts,new Promise(function(r){setTimeout(r,2500);})]).then(function(){
+    (function wait(){
+      if(texReady) requestAnimationFrame(function(){ requestAnimationFrame(finish); });
+      else setTimeout(wait,120);
+    })();
+  });
+  setTimeout(finish,9000);
 })();
 </script>
 </body>
