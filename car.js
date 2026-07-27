@@ -18,7 +18,7 @@
   var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var MOBILE  = innerWidth < 720;
 
-  var SIZE   = 0.075;                // car height, as a fraction of globe radius
+  var SIZE   = 0.13;                 // car height, as a fraction of globe radius
   var LIFT   = 1.013;                // orbit radius, as a fraction of globe radius
   var TILT   = 0.42;                 // orbit inclination, radians
   var SPEED  = REDUCED ? 0 : 0.20;   // rad/s — one lap ≈ 31s
