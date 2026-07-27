@@ -1,12 +1,14 @@
 /* ══════════════════════════════════════════════════════════
    CAR — a small car drives right around the globe on a tilted
-   orbit, kicking up a trail of dust behind it.
+   orbit, kicking up a trail of chunky pixel dust off its back
+   tyres, with two CLICK ME signs riding above it that open the
+   two live products.
 
-   Self-contained and additive: it patches WebGLRenderer.render
-   so it can reach the atlas's scene without touching the main
-   script, finds the globe by looking for the highest-resolution
-   sphere in it, and parents itself to that sphere so it turns
-   with the world. If the assets fail to load, nothing happens.
+   Self-contained and additive: it finds the atlas's scene and
+   camera by borrowing the one call three makes on both every
+   frame, finds the globe by looking for the highest-resolution
+   sphere, and parents itself to that sphere so it turns with
+   the world. If the assets fail to load, nothing happens.
 
    assets/car.bin  — quantised geometry (see parse() for layout)
    assets/car.jpg  — base colour map
@@ -22,24 +24,33 @@
   var LIFT   = 1.013;                // orbit radius, as a fraction of globe radius
   var TILT   = 0.42;                 // orbit inclination, radians
   var SPEED  = REDUCED ? 0 : 0.20;   // rad/s — one lap ≈ 31s
-  var PUFFS  = REDUCED ? 0 : (MOBILE ? 10 : 16);
-  var EMIT   = 0.06;                 // seconds between puffs
-  var LIFE   = 1.9;                  // puff lifetime, seconds
+  var GRIT   = REDUCED ? 0 : (MOBILE ? 10 : 16);   // dust blocks
+  var EMIT   = 0.05;                 // seconds between blocks
+  var LIFE   = 1.3;                  // block lifetime, seconds
+  var DUST   = 0x9c8a6a;             // dust colour
 
-  var scene = null, started = false, car = null, last = 0;
+  var LINKS = [
+    { url: 'https://arthis.space', label: 'arthis.space' },
+    { url: 'https://arthis.land',  label: 'arthis.land'  }
+  ];
 
-  /* ---------- finding the scene ----------
-     the atlas keeps its scene inside a closure, so borrow it from the one
-     call three makes on every frame: renderer.render() → scene.updateMatrixWorld().
-     The hook removes itself the moment it has what it needs. */
+  var scene = null, camera = null, started = false, wired = false;
+  var car = null, panels = [], last = 0;
+
+  /* ---------- finding the scene and camera ----------
+     both are shut inside the atlas's closure, so borrow them from the one
+     call three makes on each of them every frame:
+       renderer.render() → scene.updateMatrixWorld() and camera.updateMatrixWorld()
+     The hook takes itself back out as soon as it has both. */
   var origUpdate = THREE.Object3D.prototype.updateMatrixWorld;
   THREE.Object3D.prototype.updateMatrixWorld = function (force) {
-    if (!started && this.isScene) {
-      started = true;
+    if (!scene && this.isScene) {
       scene = this;
-      THREE.Object3D.prototype.updateMatrixWorld = origUpdate;
-      load();
+      if (!started) { started = true; load(); }
+    } else if (!camera && this.isCamera) {
+      camera = this;
     }
+    if (scene && camera) THREE.Object3D.prototype.updateMatrixWorld = origUpdate;
     return origUpdate.call(this, force);
   };
 
@@ -101,16 +112,71 @@
     return g;
   }
 
-  /* ---------- soft dust sprite ---------- */
-  function puffTexture() {
-    var c = document.createElement('canvas'); c.width = c.height = 64;
+  /* ---------- 8-bit dust blocks ---------- */
+  var BLOBS = [
+    ['00111000',
+     '01111100',
+     '11111110',
+     '11111111',
+     '11111110',
+     '01111100',
+     '00111000',
+     '00010000'],
+    ['00011000',
+     '00111100',
+     '01111110',
+     '11111100',
+     '01111110',
+     '00111100',
+     '00011000',
+     '00000000'],
+    ['00110000',
+     '01111000',
+     '11111100',
+     '11111110',
+     '01111100',
+     '00111100',
+     '00011000',
+     '00000000']
+  ];
+
+  function blockTexture(rows) {
+    var c = document.createElement('canvas'); c.width = c.height = 8;
     var g = c.getContext('2d');
-    var r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-    r.addColorStop(0,   'rgba(255,255,255,.9)');
-    r.addColorStop(.45, 'rgba(255,255,255,.36)');
-    r.addColorStop(1,   'rgba(255,255,255,0)');
-    g.fillStyle = r; g.fillRect(0, 0, 64, 64);
-    return new THREE.CanvasTexture(c);
+    g.fillStyle = '#ffffff';
+    for (var y = 0; y < 8; y++)
+      for (var x = 0; x < 8; x++)
+        if (rows[y].charAt(x) === '1') g.fillRect(x, y, 1, 1);
+    var t = new THREE.CanvasTexture(c);
+    t.magFilter = THREE.NearestFilter;
+    t.minFilter = THREE.NearestFilter;
+    t.generateMipmaps = false;
+    return t;
+  }
+
+  /* ---------- the CLICK ME signs ---------- */
+  function signTexture(label) {
+    var W = 384, H = 132, c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    var g = c.getContext('2d');
+    var FONT = '"Space Grotesk", system-ui, sans-serif';
+
+    g.fillStyle = '#16181d'; g.fillRect(0, 0, W, H);              // hard ink border
+    g.fillStyle = '#ffffff'; g.fillRect(6, 6, W - 12, H - 12);
+    g.fillStyle = '#e8392b'; g.fillRect(6, 6, 10, H - 12);        // accent rail
+
+    g.textAlign = 'center';
+    g.fillStyle = '#16181d';
+    g.font = '600 44px ' + FONT;
+    g.fillText('CLICK ME', W / 2 + 6, 56);
+    g.fillStyle = '#e8392b';
+    g.font = '600 32px ' + FONT;
+    g.fillText(label, W / 2 + 6, 102);
+
+    var t = new THREE.CanvasTexture(c);
+    t.anisotropy = MOBILE ? 2 : 8;
+    if ('sRGBEncoding' in THREE) t.encoding = THREE.sRGBEncoding;
+    return t;
   }
 
   /* ---------- load ---------- */
@@ -142,22 +208,36 @@
     scene.traverse(function (o) { if (o.isLight) lit = true; });
     var mat = lit ? new THREE.MeshLambertMaterial({ map: map })
                   : new THREE.MeshBasicMaterial({ map: map });
+
     var g = new THREE.Group();
     var mesh = new THREE.Mesh(geo, mat);
-    mesh.scale.setScalar(R * SIZE);
+    var scale = R * SIZE;
+    mesh.scale.setScalar(scale);
     g.add(mesh);
     host.add(g);
 
-    var ptex = PUFFS ? puffTexture() : null;
-    var puffs = [];
-    for (var k = 0; k < PUFFS; k++) {
-      var s = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: ptex, color: 0x9c8a6a, transparent: true,   /* dust, dark enough to read */
+    /* one sign per product, riding either side of the roof */
+    for (var s = 0; s < LINKS.length; s++) {
+      var sign = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: signTexture(LINKS[s].label), transparent: true,
+        depthWrite: false, fog: false
+      }));
+      sign.scale.set(scale * 2.3, scale * 0.79, 1);
+      sign.userData.url = LINKS[s].url;
+      host.add(sign);
+      panels.push(sign);
+    }
+
+    var grit = GRIT ? BLOBS.map(blockTexture) : null;
+    var dust = [];
+    for (var k = 0; k < GRIT; k++) {
+      var d = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: grit[k % grit.length], color: DUST, transparent: true,
         opacity: 0, depthWrite: false, fog: false
       }));
-      s.visible = false;
-      host.add(s);
-      puffs.push({ s: s, t: 0, v: new THREE.Vector3() });
+      d.visible = false;
+      host.add(d);
+      dust.push({ s: d, t: 0, v: new THREE.Vector3() });
     }
 
     /* orbit plane: a great circle tilted off the equator */
@@ -165,13 +245,61 @@
     var v = new THREE.Vector3(0, 0, 1);
 
     car = { g: g, R: R, r: R * LIFT, u: u, v: v, a: 0,
-            puffs: puffs, next: 0, n: 0, scale: R * SIZE };
+            dust: dust, next: 0, n: 0, side: 1, scale: scale };
+
+    wireClicks();
+  }
+
+  /* ---------- clicking a sign ---------- */
+  function wireClicks() {
+    if (wired) return;
+    var canvas = document.getElementById('scene') || document.querySelector('canvas');
+    if (!canvas) return;
+    wired = true;
+
+    var ray = new THREE.Raycaster(), pt = new THREE.Vector2();
+    var armed = null, downX = 0, downY = 0, prevCursor = '';
+
+    function pick(e) {
+      if (!camera) return null;
+      var r = canvas.getBoundingClientRect();
+      pt.x =  ((e.clientX - r.left) / r.width)  * 2 - 1;
+      pt.y = -((e.clientY - r.top)  / r.height) * 2 + 1;
+      ray.setFromCamera(pt, camera);
+      var hits = ray.intersectObjects(panels, false);
+      return hits.length ? hits[0].object : null;
+    }
+
+    addEventListener('pointermove', function (e) {
+      if (armed) return;
+      var over = !!pick(e);
+      if (over) { canvas.style.cursor = 'pointer'; prevCursor = 'pointer'; }
+      else if (prevCursor) { canvas.style.cursor = ''; prevCursor = ''; }
+    }, { passive: true });
+
+    canvas.addEventListener('pointerdown', function (e) {
+      var hit = pick(e);
+      if (!hit) return;
+      armed = hit; downX = e.clientX; downY = e.clientY;
+      e.stopPropagation();          // don't start dragging the globe
+    }, true);
+
+    canvas.addEventListener('pointerup', function (e) {
+      if (!armed) return;
+      var moved = Math.abs(e.clientX - downX) + Math.abs(e.clientY - downY);
+      var url = armed.userData.url;
+      armed = null;
+      if (moved < 8) { e.stopPropagation(); open(url, '_blank', 'noopener'); }
+    }, true);
   }
 
   /* ---------- per frame ---------- */
   var P = new THREE.Vector3(), V = new THREE.Vector3(),
       UP = new THREE.Vector3(), RGT = new THREE.Vector3(),
       TMP = new THREE.Vector3(), M = new THREE.Matrix4();
+
+  var STEP_SCALE   = [0.30, 0.46, 0.66, 0.88];   // stepped, not smooth — keeps it 8-bit
+  var STEP_OPACITY = [0.80, 0.62, 0.40, 0.17];
 
   function step() {
     var now = performance.now() / 1000;
@@ -192,35 +320,51 @@
     M.makeBasis(RGT, UP, V);
     c.g.quaternion.setFromRotationMatrix(M);
 
-    if (!c.puffs.length) return;
+    /* signs float over the roof, one either side, with a slow bob */
+    var lift = c.scale * (1.9 + Math.sin(now * 1.6) * 0.08);
+    for (var s = 0; s < panels.length; s++) {
+      var off = (s === 0 ? -1 : 1) * c.scale * 1.28;
+      panels[s].position.copy(P)
+        .addScaledVector(UP, lift)
+        .addScaledVector(RGT, off);
+    }
 
+    if (!c.dust.length) return;
+
+    /* kick a block out from under whichever back tyre is next */
     c.next -= dt;
     if (c.next <= 0) {
       c.next = EMIT;
-      var p = c.puffs[c.n % c.puffs.length]; c.n++;
+      c.side = -c.side;
+      var p = c.dust[c.n % c.dust.length]; c.n++;
       p.t = LIFE;
       p.s.visible = true;
-      /* just behind the tailpipe, a hair above the surface */
-      TMP.copy(P).addScaledVector(V, -c.scale * 0.62).addScaledVector(UP, c.scale * 0.18);
+      TMP.copy(P)
+        .addScaledVector(V, -c.scale * 0.34)
+        .addScaledVector(RGT, c.scale * 0.19 * c.side)
+        .addScaledVector(UP, c.scale * 0.07);
       p.s.position.copy(TMP);
-      p.v.copy(V).multiplyScalar(-c.scale * 0.7)
-        .addScaledVector(UP, c.scale * (0.55 + Math.random() * 0.4))
-        .addScaledVector(RGT, c.scale * (Math.random() - 0.5) * 0.8);
+      p.v.copy(V).multiplyScalar(-c.scale * 0.9)
+        .addScaledVector(RGT, c.scale * (0.3 * c.side + (Math.random() - 0.5) * 0.3))
+        .addScaledVector(UP, c.scale * (0.5 + Math.random() * 0.3));
     }
 
-    for (var k = 0; k < c.puffs.length; k++) {
-      var q = c.puffs[k];
+    for (var k = 0; k < c.dust.length; k++) {
+      var q = c.dust[k];
       if (q.t <= 0) continue;
       q.t -= dt;
       if (q.t <= 0) { q.s.visible = false; q.s.material.opacity = 0; continue; }
 
       q.s.position.addScaledVector(q.v, dt);
-      q.v.multiplyScalar(0.968);
+      q.v.multiplyScalar(0.94);
+      /* let it settle back toward the surface */
+      TMP.copy(q.s.position).normalize();
+      q.v.addScaledVector(TMP, -c.scale * 0.55 * dt);
 
-      var t = 1 - q.t / LIFE;
-      var sc = c.scale * (0.45 + t * 1.6);
+      var stage = Math.min(3, Math.floor((1 - q.t / LIFE) * 4));
+      var sc = STEP_SCALE[stage] * c.scale;
       q.s.scale.set(sc, sc, 1);
-      q.s.material.opacity = 0.4 * (1 - t) * Math.min(1, t * 6);
+      q.s.material.opacity = STEP_OPACITY[stage];
     }
   }
 })();
