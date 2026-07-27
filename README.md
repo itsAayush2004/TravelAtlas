@@ -4,7 +4,7 @@
 
 A living, interactive 3D globe charting every place I've been — and the places I still dream of going. A single self-contained HTML file, built with Three.js, styled like an antique atlas.
 
-**Live:** https://itsAayush2004.github.io/TravelAtlas/
+**Live demo:** https://itsAayush2004.github.io/TravelDiary/
 
 ## Features
 
