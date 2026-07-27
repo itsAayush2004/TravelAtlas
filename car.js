@@ -28,25 +28,25 @@
 
   var scene = null, started = false, car = null, last = 0;
 
-  /* ---------- frame hook ----------
-     three r128 hangs render() off the instance, not the prototype, so the
-     renderer has to be wrapped as it is constructed */
-  function hook(sc) {
-    if (!started && sc && sc.isScene) { started = true; scene = sc; load(); }
-    if (car) step();
-  }
-
-  var Renderer = THREE.WebGLRenderer;
-  function Wrapped(params) {
-    var r = new Renderer(params);
-    var draw = r.render;
-    if (typeof draw === 'function') {
-      r.render = function (sc, cam) { hook(sc); return draw.call(this, sc, cam); };
+  /* ---------- finding the scene ----------
+     the atlas keeps its scene inside a closure, so borrow it from the one
+     call three makes on every frame: renderer.render() → scene.updateMatrixWorld().
+     The hook removes itself the moment it has what it needs. */
+  var origUpdate = THREE.Object3D.prototype.updateMatrixWorld;
+  THREE.Object3D.prototype.updateMatrixWorld = function (force) {
+    if (!started && this.isScene) {
+      started = true;
+      scene = this;
+      THREE.Object3D.prototype.updateMatrixWorld = origUpdate;
+      load();
     }
-    return r;
-  }
-  Wrapped.prototype = Renderer.prototype;
-  THREE.WebGLRenderer = Wrapped;
+    return origUpdate.call(this, force);
+  };
+
+  (function frame() {
+    requestAnimationFrame(frame);
+    if (car) step();
+  })();
 
   /* ---------- find the globe ---------- */
   /* the globe is the sphere built with by far the most segments —
